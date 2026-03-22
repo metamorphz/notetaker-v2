@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": `multipart/form-data; boundary=${boundary}`,
           "Content-Length": String(multipart.length),
         },
-        body: multipart,
+        body: new Uint8Array(multipart),
       });
 
       if (!res.ok) {
