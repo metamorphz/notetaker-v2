@@ -24,7 +24,10 @@ export default function Home() {
   const [downloading, setDownloading] = useState(false);
   const [saveResult, setSaveResult] = useState<string | null>(null);
 
-  const handleLogin = () => instance.loginPopup(loginRequest);
+  const handleLogin = () =>
+    instance.loginPopup(loginRequest).then((response) => {
+      if (response?.account) instance.setActiveAccount(response.account);
+    });
   const handleLogout = () => instance.logoutPopup();
 
   const handleFilesAdded = (files: File[]) => {
@@ -68,7 +71,7 @@ export default function Home() {
     setSaving(true);
     setSaveResult(null);
     try {
-      const account = instance.getActiveAccount();
+      const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0];
       if (!account) throw new Error("No active account");
 
       const tokenResponse = await instance.acquireTokenSilent({
