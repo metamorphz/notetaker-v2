@@ -6,7 +6,7 @@ const clientId = process.env.NEXT_PUBLIC_AZURE_CLIENT_ID ?? "";
 export const msalConfig = {
   auth: {
     clientId,
-    authority: "https://login.microsoftonline.com/common",
+    authority: "https://login.microsoftonline.com/consumers",
     redirectUri: typeof window !== "undefined" ? window.location.origin : "",
   },
   cache: {
