@@ -19,7 +19,11 @@ function buildMultipart(entry: EntryPayload, boundary: string): Buffer {
   const imageBuffer = Buffer.from(b64, "base64");
   const imageName = `img_${Date.now()}`;
 
-  const title = entry.fileName.replace(/\.[^.]+$/, "");
+  const title = new Date().toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }); // e.g. "22 Mar 2026"
   const html = `<!DOCTYPE html>
 <html>
   <head><title>${title}</title></head>
