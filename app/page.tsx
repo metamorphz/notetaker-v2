@@ -64,6 +64,20 @@ export default function Home() {
     setEntries((prev) => prev.filter((e) => e.id !== id));
   };
 
+  // Convert a blob: URL to a base64 data URL so the server can read it
+  const toDataUrl = (blobUrl: string): Promise<string> =>
+    fetch(blobUrl)
+      .then((r) => r.blob())
+      .then(
+        (blob) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          })
+      );
+
   const handleSaveToOneNote = async () => {
     const done = entries.filter((e) => e.status === "done");
     if (!done.length) return;
@@ -79,16 +93,21 @@ export default function Home() {
         account,
       });
 
+      // Convert all blob: URLs to base64 data URLs before sending to the server
+      const entriesWithDataUrls = await Promise.all(
+        done.map(async (e) => ({
+          imageDataUrl: await toDataUrl(e.imageDataUrl),
+          fileName: e.fileName,
+          extractedText: e.extractedText,
+        }))
+      );
+
       const res = await fetch("/api/onenote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           accessToken: tokenResponse.accessToken,
-          entries: done.map((e) => ({
-            imageDataUrl: e.imageDataUrl,
-            fileName: e.fileName,
-            extractedText: e.extractedText,
-          })),
+          entries: entriesWithDataUrls,
         }),
       });
 

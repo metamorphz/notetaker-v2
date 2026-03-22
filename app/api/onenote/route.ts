@@ -83,7 +83,6 @@ export async function POST(req: NextRequest) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": `multipart/form-data; boundary=${boundary}`,
-          "Content-Length": String(multipart.length),
         },
         body: new Uint8Array(multipart),
       });
